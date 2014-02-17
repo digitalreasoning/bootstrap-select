@@ -16,7 +16,8 @@
     "replacement"
   ],
   "dependencies": {
-    "jquery": ">=1.7"
+    "jquery": "~2.1.0",
+    "bootstrap": "~3.1.1"
   },
   "license": "MIT",
   "ignore": [
