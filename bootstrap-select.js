@@ -494,9 +494,7 @@
                 e.stopPropagation();
             });
 
-            this.$newElement.on('click', ':not(.close)', function(e) {
-                console.log('I Fired when you clicked the newElement', e.target);
-                console.log(e);
+            this.$newElement.on('click', function(e) {
                 that.setSize();
                 if (!that.options.liveSearch && !that.multiple) {
                     setTimeout(function() {
@@ -506,8 +504,6 @@
             });
 
             this.$newElement.on('click', '.close.bootstrap-select-close', function(e) {
-                console.log('I Fired on the close button');
-                console.log(e);
                 var $closeBtn = $(this);
                 e.stopPropagation();
                 // Find the option with the value below.
@@ -526,7 +522,6 @@
 
 
             this.$menu.on('click', 'li a', function(e) {
-                console.log('I Fired when you clicked the a link on the $menu', e);
                 var clickedIndex = $(this).parent().index(),
                     prevValue = that.$element.val(),
                     prevIndex = that.$element.prop('selectedIndex');
@@ -571,7 +566,6 @@
             });
 
             this.$menu.on('click', 'li.disabled a, li dt, li .div-contain, .popover-title, .popover-title :not(.close)', function(e) {
-                console.log('I FIRED when you clicked $menu', e);
                 if (e.target == this) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -583,8 +577,7 @@
                 }
             });
 
-            this.$menu.on('click', '.popover-title .close', function(e) {
-                console.log('I FIRED ON .close', e);
+            this.$menu.on('click', '.popover-title .close', function() {
                 that.$button.focus();
             });
 
