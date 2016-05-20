@@ -89,10 +89,10 @@
             var searchbox = this.options.liveSearch ? '<div class="bootstrap-select-searchbox"><input type="text" class="input-block-level form-control" /></div>' : '';
             var drop =
                 '<div class="btn-group bootstrap-select' + multiple + labels + '">' +
-                    '<button type="button" class="btn dropdown-toggle selectpicker" data-toggle="dropdown"'+ autofocus +'>' +
+                    '<div class="btn btn-default dropdown-toggle selectpicker" data-toggle="dropdown"'+ autofocus +'>' +
                         '<div class="filter-option"></div>&nbsp;' +
                         '<span class="caret"></span>' +
-                    '</button>' +
+                    '</div>' +
                     '<div class="dropdown-menu open">' +
                         header +
                         searchbox +
@@ -240,10 +240,10 @@
                     var escapedVal = encodeURIComponent(selectedItems[i]);
                     titleHTML +=
                         '<span class="label label-default bootstrap-select-label pull-left">' +
-                            '<span>' + selectedItems[i] + '</span>' + 
-                            '<a class="close bootstrap-select-close" ' + 
+                            '<span class="item-name">' + selectedItems[i] + '</span>' +
+                            '<span class="close bootstrap-select-close" ' +
                                  'title="Unselect ' + escapedVal + '" ' +
-                                 'data-value="' + escapedVal + '">&times;</a>' +
+                                 'data-value="' + escapedVal + '">&times;</span>' +
                         '</span>';
                 }
             }
@@ -265,26 +265,6 @@
             this.$button.attr('title', $.trim(title));
             var $filterOption = this.$newElement.find('.filter-option');
             $filterOption.html(titleHTML || '<div class="nothing-selected">' + title + '</div>');
-
-            if (this.options.labels) {
-                // Detect clicks on the 'remove' button for each label.
-                $('.bootstrap-select-close', $filterOption).click(function(e) {
-                    var $closeBtn = $(this);
-                    e.stopPropagation();
-                    // Find the option with the value below.
-                    // De-select and call render.
-                    var val = $closeBtn.data('value');
-                    $('option', that.$element).each(function() {
-                        var $option = $(this);
-                        if ($option.attr('value') !== val && $option.text() !== decodeURIComponent(val)) return;
-                        $option.removeAttr('selected');
-                    });
-                    // Calling change() calls render but does not updateLIs.
-                    that.$element.change();
-                    // The LIs need to be updated.
-                    that.render();
-                });
-            }
         },
 
         setStyle: function(style, status) {
@@ -310,9 +290,9 @@
                 liHeight = $menuClone.find('li > a').outerHeight(),
                 headerHeight = this.options.header ? $menuClone.find('.popover-title').outerHeight() : 0,
                 searchHeight = this.options.liveSearch ? $menuClone.find('.bootstrap-select-searchbox').outerHeight() : 0;
-            
+
             $selectClone.remove();
-            
+
             this.$newElement
                 .data('liHeight', liHeight)
                 .data('headerHeight', headerHeight)
@@ -453,7 +433,7 @@
             this.checkDisabled();
             this.liHeight();
         },
-        
+
         update: function() {
             this.reloadLi();
             this.setWidth();
@@ -514,7 +494,9 @@
                 e.stopPropagation();
             });
 
-            this.$newElement.on('click', function() {
+            this.$newElement.on('click', ':not(.close)', function(e) {
+                console.log('I Fired when you clicked the newElement', e.target);
+                console.log(e);
                 that.setSize();
                 if (!that.options.liveSearch && !that.multiple) {
                     setTimeout(function() {
@@ -523,7 +505,28 @@
                 }
             });
 
+            this.$newElement.on('click', '.close.bootstrap-select-close', function(e) {
+                console.log('I Fired on the close button');
+                console.log(e);
+                var $closeBtn = $(this);
+                e.stopPropagation();
+                // Find the option with the value below.
+                // De-select and call render.
+                var val = $closeBtn.data('value');
+                $('option', that.$element).each(function() {
+                    var $option = $(this);
+                    if ($option.attr('value') !== val && $option.text() !== decodeURIComponent(val)) return;
+                    $option.removeAttr('selected');
+                });
+                // Calling change() calls render but does not updateLIs.
+                that.$element.change();
+                // The LIs need to be updated.
+                that.render();
+            });
+
+
             this.$menu.on('click', 'li a', function(e) {
+                console.log('I Fired when you clicked the a link on the $menu', e);
                 var clickedIndex = $(this).parent().index(),
                     prevValue = that.$element.val(),
                     prevIndex = that.$element.prop('selectedIndex');
@@ -568,6 +571,7 @@
             });
 
             this.$menu.on('click', 'li.disabled a, li dt, li .div-contain, .popover-title, .popover-title :not(.close)', function(e) {
+                console.log('I FIRED when you clicked $menu', e);
                 if (e.target == this) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -578,8 +582,9 @@
                     }
                 }
             });
-            
-            this.$menu.on('click', '.popover-title .close', function() {
+
+            this.$menu.on('click', '.popover-title .close', function(e) {
+                console.log('I FIRED ON .close', e);
                 that.$button.focus();
             });
 
@@ -612,7 +617,7 @@
             this.$searchbox.on('input propertychange', function() {
                 if (that.$searchbox.val()) {
                     that.$menu.find('li').show().not(':icontains(' + that.$searchbox.val() + ')').hide();
-                    
+
                     if (!that.$menu.find('li').filter(':visible:not(.no-results)').length) {
                         if (!!no_results.parent().length) no_results.remove();
                         no_results.html(that.options.noneResultsText + ' "'+ that.$searchbox.val() + '"').show();
@@ -620,7 +625,7 @@
                     } else if (!!no_results.parent().length) {
                         no_results.remove();
                     }
-                    
+
                 } else {
                     that.$menu.find('li').show();
                     if (!!no_results.parent().length) no_results.remove();
@@ -630,12 +635,12 @@
                 that.$menu.find('li').filter(':visible:not(.divider)').eq(0).addClass('active').find('a').focus();
                 $(this).focus();
             });
-            
+
             this.$menu.on('mouseenter', 'a', function(e) {
               that.$menu.find('.active').removeClass('active');
               $(e.currentTarget).parent().not('.disabled').addClass('active');
             });
-            
+
             this.$menu.on('mouseleave', 'a', function() {
               that.$menu.find('.active').removeClass('active');
             });
@@ -686,17 +691,17 @@
             $this = $(this);
 
             $parent = $this.parent();
-            
+
             if ($this.is('input')) $parent = $this.parent().parent();
 
             that = $parent.data('this');
-            
+
             if (that.options.liveSearch) $parent = $this.parent().parent();
 
             if (that.options.container) $parent = that.$menu;
 
             $items = $('[role=menu] li:not(.divider) a', $parent);
-            
+
             isActive = that.$menu.parent().hasClass('open');
 
             if (!isActive && /([0-9]|[A-z])/.test(String.fromCharCode(e.keyCode))) {
@@ -705,7 +710,7 @@
                 isActive = that.$menu.parent().hasClass('open');
                 that.$searchbox.focus();
             }
-            
+
             if (that.options.liveSearch) {
                 if (/(^9$|27)/.test(e.keyCode) && isActive && that.$menu.find('.active').length === 0) {
                     e.preventDefault();
@@ -723,14 +728,14 @@
             if (!$items.length) return;
 
             if (/(38|40)/.test(e.keyCode)) {
-                
+
                 index = $items.index($items.filter(':focus'));
                 first = $items.parent(':not(.disabled):visible').first().index();
                 last = $items.parent(':not(.disabled):visible').last().index();
                 next = $items.eq(index).parent().nextAll(':not(.disabled):visible').eq(0).index();
                 prev = $items.eq(index).parent().prevAll(':not(.disabled):visible').eq(0).index();
                 nextPrev = $items.eq(next).parent().prevAll(':not(.disabled):visible').eq(0).index();
-                
+
                 if (that.options.liveSearch) {
                     $items.each(function(i) {
                         if ($(this).is(':not(.disabled)')) {
@@ -744,9 +749,9 @@
                     prev = $items.eq(index).prevAll(':not(.disabled):visible').eq(0).data('index');
                     nextPrev = $items.eq(next).prevAll(':not(.disabled):visible').eq(0).data('index');
                 }
-                
+
                 prevIndex = $this.data('prevIndex');
-                
+
                 if (e.keyCode == 38) {
                     if (that.options.liveSearch) index -= 1;
                     if (index != nextPrev && index > prev) index = prev;
@@ -763,7 +768,7 @@
                 }
 
                 $this.data('prevIndex', index);
-                
+
                 if (!that.options.liveSearch) {
                     $items.eq(index).focus();
                 } else {
@@ -774,7 +779,7 @@
                         $this.focus();
                     }
                 }
-                
+
             } else if (!$this.is('input')) {
 
                 var keyIndex = [],
@@ -817,7 +822,7 @@
                 }
                 $(document).data('keycount',0);
             }
-            
+
             if ((/(^9$|27)/.test(e.keyCode) && isActive && (that.multiple || that.options.liveSearch)) || (/(27)/.test(e.keyCode) && !isActive)) {
                 that.$menu.parent().removeClass('open');
                 that.$button.focus();
