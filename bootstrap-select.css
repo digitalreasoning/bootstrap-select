@@ -16,7 +16,7 @@
     background-color: #E4E4E4;
     color: #333;
     font-weight: normal;
-    
+
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #f4f4f4), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), color-stop(100%, #eeeeee));
     background-image: -webkit-linear-gradient(#f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eeeeee 100%);
     background-image: -moz-linear-gradient(#f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eeeeee 100%);
@@ -34,9 +34,11 @@
 
 .label.bootstrap-select-label .bootstrap-select-close {
     float: none;
+    display: inline-block;
     position: absolute;
-    top: -4px;
-    right: 5px;
+    height: 100%;
+    top: -2px;
+    right: 3px;
     font-size: 20px;
     opacity: 0.4;
 }
@@ -93,7 +95,7 @@
 }
 
 .bootstrap-select.labels .filter-option .nothing-selected {
-    margin-bottom: 4px; 
+    margin-bottom: 4px;
 }
 
 .bootstrap-select {
